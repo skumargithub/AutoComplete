@@ -3,7 +3,7 @@ package com.sl;
 import java.util.*;
 
 public class Trie {
-    private Node root = new Node(Optional.empty(), false);
+    private Node root = new Node(Optional.empty(), 0);
 
     public void add(String s) {
         this.root.add(s);

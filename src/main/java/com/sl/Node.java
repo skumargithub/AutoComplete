@@ -1,6 +1,7 @@
 package com.sl;
 
 import java.util.*;
+import org.apache.commons.lang3.tuple.*;
 
 public class Node {
     public static Set<Character> POSSIBLE_VALUES = new TreeSet<>();
@@ -12,16 +13,11 @@ public class Node {
     }
 
     public Optional<Character> value;
-    public boolean isEnding;
+    public int isEndingCount;
 
-    /*public Node(Optional<Character> value) {
+    public Node(Optional<Character> value, int isEndingCount) {
         this.value = value;
-        this.isEnding = false;
-    }*/
-
-    public Node(Optional<Character> value, boolean isEnding) {
-        this.value = value;
-        this.isEnding = isEnding;
+        this.isEndingCount = isEndingCount;
     }
 
     // Use treemap to get an ordering on the keys
@@ -31,19 +27,21 @@ public class Node {
 //        System.err.println("parent: " + parent);
 //        System.err.println("keySet: " + children.keySet());
 
-        sb.append("(" + value + "," + isEnding + ")");
+        sb.append("(" + value + "," + isEndingCount + ")");
         sb.append("->");
         sb.append(children.keySet());
         sb.append(" ");
     }
 
-    public Set<String> getStrings() {
-        Set<String> result = new TreeSet<>();
+    public Set<Pair<String, Integer>> getStrings() {
+        Set<Pair<String, Integer>> result = new TreeSet<>();
 
         // Leaf node, it must be a proper string
         if(this.children.entrySet().isEmpty()) {
 //            System.err.println("No children, only return node value: " + Character.toString(this.value));
-            result.add(Character.toString(this.value.get()));
+            String toAdd = this.value.isPresent() ? Character.toString(this.value.get()) : "";
+            int toAddCount = this.isEndingCount;
+            result.add(new ImmutablePair(toAdd, toAddCount));
 
             return result;
         }
@@ -52,18 +50,20 @@ public class Node {
 //            System.err.println("we have children for node with value: " + Character.toString(this.value));
             Node node = entry.getValue();
 
-            Set<String> childStrings = node.getStrings();
-            for (String childString : childStrings) {
-                String toAdd = Character.toString(this.value.get()) + childString;
-                result.add(toAdd);
+            Set<Pair<String, Integer>> childStringAndCounts = node.getStrings();
+            for (Pair<String, Integer> childStringAndCount : childStringAndCounts) {
+                String toAdd = (this.value.isPresent() ? Character.toString(this.value.get()) : "") + childStringAndCount.getLeft();
+                int toAddCount = childStringAndCount.getRight();
+
+                result.add(new ImmutablePair<>(toAdd, toAddCount));
 //                System.err.println("Adding : " + toAdd);
             }
 
             // If the node is ending, add an extra entry
-            if(this.isEnding) {
+            if(this.isEndingCount > 0) {
 //                System.err.println("Node is ending with value: " + Character.toString(this.value));
                 String toAdd = Character.toString(this.value.get());
-                result.add(toAdd);
+                result.add(new ImmutablePair(toAdd, this.isEndingCount));
 //                System.err.println("Adding : " + toAdd);
             }
         }
@@ -83,10 +83,10 @@ public class Node {
 //        System.err.println("Trying at add: " + s);
         char c0 = s.toLowerCase().charAt(0);
 
-        children.putIfAbsent(c0, new Node(Optional.of(c0), false));
+        children.putIfAbsent(c0, new Node(Optional.of(c0), 0));
         Node child = children.get(c0);
         if(s.length() == 1) {
-            child.isEnding = true;  // The string ends here, so mark it as a valid ending
+            child.isEndingCount++;      // The string ends here, so increment the word ending count
         } else {
             String ss = s.substring(1);
 //            System.err.println("Adding " + ss + " to: " + c0);

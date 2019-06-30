@@ -1,90 +1,125 @@
 package com.sl;
 
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.*;
 import org.junit.Test;
 
 public class NodeTest {
+    @Test(/* Can we represent the root node? */)
+    public void rootNode() {
+        Node node = new Node(Optional.empty(), 0);
+
+        Set<Pair<String, Integer>> nodeStrings = node.getStrings();
+//        System.err.println(nodeStrings);
+
+        Set<Pair<String, Integer>> expectedNodeStrings = new HashSet<>();
+        expectedNodeStrings.add(new ImmutablePair<>("", 0));
+
+        assert(nodeStrings.equals(expectedNodeStrings));
+    }
+
     @Test(/* Can we represent a node with no children? */)
     public void nodeWithNoChild() {
-        Node node = new Node(Optional.of('a'), true);
+        Node node = new Node(Optional.of('a'), 1);
 
-        Set<String> nodeStrings = node.getStrings();
+        Set<Pair<String, Integer>> nodeStrings = node.getStrings();
 
-        Set<String> expectedNodeStrings = new HashSet<>();
-        expectedNodeStrings.add("a");
+        Set<Pair<String, Integer>> expectedNodeStrings = new HashSet<>();
+        expectedNodeStrings.add(new ImmutablePair<>("a", 1));
 
         assert(nodeStrings.equals(expectedNodeStrings));
     }
 
     @Test(/* Can we represent a node with ONE immediate child? */)
     public void nodeWithOneImmediateChild() {
-        Node node = new Node(Optional.of('a'), false);
+        Node node = new Node(Optional.of('a'), 0);
         node.add("b");
 
-        Set<String> nodeStrings = node.getStrings();
+        Set<Pair<String, Integer>> nodeStrings = node.getStrings();
 //        System.err.println(nodeStrings);
 
-        Set<String> expectedNodeStrings = new HashSet<>();
-        expectedNodeStrings.add("ab");
+        Set<Pair<String, Integer>> expectedNodeStrings = new HashSet<>();
+        expectedNodeStrings.add(new ImmutablePair<>("ab", 1));
 
         assert(nodeStrings.equals(expectedNodeStrings));
     }
 
     @Test(/* Can we represent a node with TWO immediate children? */)
     public void nodeWithTwoImmediateChildren() {
-        Node node = new Node(Optional.of('a'), false);
+        Node node = new Node(Optional.of('a'), 0);
         node.add("b");
         node.add("c");
 
-        Set<String> nodeStrings = node.getStrings();
+        Set<Pair<String, Integer>> nodeStrings = node.getStrings();
 
-        Set<String> expectedNodeStrings = new HashSet<>();
-        expectedNodeStrings.add("ab");
-        expectedNodeStrings.add("ac");
+        Set<Pair<String, Integer>> expectedNodeStrings = new HashSet<>();
+        expectedNodeStrings.add(new ImmutablePair<>("ab", 1));
+        expectedNodeStrings.add(new ImmutablePair<>("ac", 1));
+
+        assert(nodeStrings.equals(expectedNodeStrings));
+    }
+
+    @Test(/* Can we represent a node with TWO immediate children? */)
+    public void nodeWithTwoImmediateRepeatChildren() {
+        Node node = new Node(Optional.of('a'), 0);
+        node.add("b");
+        node.add("c");
+
+        node.add("b");
+        node.add("c");
+
+        Set<Pair<String, Integer>> nodeStrings = node.getStrings();
+
+        Set<Pair<String, Integer>> expectedNodeStrings = new HashSet<>();
+        expectedNodeStrings.add(new ImmutablePair<>("ab", 2));
+        expectedNodeStrings.add(new ImmutablePair<>("ac", 2));
 
         assert(nodeStrings.equals(expectedNodeStrings));
     }
 
     @Test(/* Can we represent a node with ONE immediate child who has an immediate child? */)
     public void nodeWithImmediateChildWhoHasImmediateChild() {
-        Node node = new Node(Optional.of('a'), false);
+        Node node = new Node(Optional.of('a'), 0);
         node.add("bc");
 
-        Set<String> nodeStrings = node.getStrings();
+        Set<Pair<String, Integer>> nodeStrings = node.getStrings();
 
-        Set<String> expectedNodeStrings = new HashSet<>();
-        expectedNodeStrings.add("abc");
+        Set<Pair<String, Integer>> expectedNodeStrings = new HashSet<>();
+        expectedNodeStrings.add(new ImmutablePair<>("abc", 1));
 
         assert(nodeStrings.equals(expectedNodeStrings));
     }
 
     @Test(/* Can we represent a node with intermediate ends (aa and aac) ? */)
     public void nodeWithIntermediteEndingChild() {
-        Node node = new Node(Optional.of('a'), false);
+        Node node = new Node(Optional.of('a'), 0);
         node.add("a");   // aa
         node.add("ac");  // aac
 
-        Set<String> nodeStrings = node.getStrings();
+        Set<Pair<String, Integer>> nodeStrings = node.getStrings();
 //        System.err.println(nodeStrings);
 
-        Set<String> expectedNodeStrings = new HashSet<>();
-        expectedNodeStrings.add("aa");
-        expectedNodeStrings.add("aac");
+        Set<Pair<String, Integer>> expectedNodeStrings = new HashSet<>();
+        expectedNodeStrings.add(new ImmutablePair<>("aa", 1));
+        expectedNodeStrings.add(new ImmutablePair<>("aac", 1));
 
         assert(nodeStrings.equals(expectedNodeStrings));
     }
 
     @Test(/* Can we represent a node with ONE immediate child who has TWO immediate children? */)
     public void nodeWithImmediateChildWhoHasTwoImmediateChildren() {
-        Node node = new Node(Optional.of('a'), false);
+        Node node = new Node(Optional.of('a'), 0);
         node.add("bc");
         node.add("bd");
 
-        Set<String> nodeStrings = node.getStrings();
+        Set<Pair<String, Integer>> nodeStrings = node.getStrings();
 
-        Set<String> expectedNodeStrings = new HashSet<>();
-        expectedNodeStrings.add("abc");
-        expectedNodeStrings.add("abd");
+        Set<Pair<String, Integer>> expectedNodeStrings = new HashSet<>();
+        expectedNodeStrings.add(new ImmutablePair<>("abc", 1));
+        expectedNodeStrings.add(new ImmutablePair<>("abd", 1));
 
         assert(nodeStrings.equals(expectedNodeStrings));
     }
@@ -130,11 +165,11 @@ public class NodeTest {
         // Use all characters as the start node
         for(char startChar : Node.POSSIBLE_VALUES) {
             boolean startIsEnding = random.nextBoolean(); // which may or may not be an ending string
-            Node node = new Node(Optional.of(startChar), startIsEnding);
+            Node node = new Node(Optional.of(startChar), startIsEnding ? 1 : 0);
 
-            Set<String> expectedNodeStrings = new TreeSet<>();
-            if (startIsEnding) expectedNodeStrings.add(Character.toString(startChar));
-            for (int i = 0; i < 100; ++i) { // Add 100 strings to this node
+            Set<Pair<String, Integer>> expectedNodeStrings = new TreeSet<>();
+            if (startIsEnding) expectedNodeStrings.add(new ImmutablePair<>(Character.toString(startChar), 1));
+            for (int i = 0; i < 1000; ++i) { // Add 1000 strings to this node
                 StringBuilder generatedString = new StringBuilder();
                 generatedString.append(startChar);
 
@@ -147,11 +182,28 @@ public class NodeTest {
                 }
 
 //            System.err.println("Generated string: " + generatedString.toString());
-                expectedNodeStrings.add(Character.toString(startChar) + generatedString);
+                String toAdd = Character.toString(startChar) + generatedString;
+                Predicate<Pair<String, Integer>> predicate = p-> p.getLeft().equals(toAdd);
+
+                // If we already have a previous entry, increment it's count
+                List<Pair<String, Integer>> oldItems = expectedNodeStrings.stream().filter(p -> p.getLeft().equals(toAdd)).collect(Collectors.toList());
+                if(!oldItems.isEmpty()) {
+//                    System.err.println("Found old item: " + oldItems);
+                    Pair<String, Integer> oldItem = oldItems.get(0);
+                    expectedNodeStrings.remove(oldItem);
+
+                    Pair<String, Integer> newItem = new ImmutablePair<>(toAdd, oldItem.getRight() + 1);
+//                    System.err.println("Replacing with: " + newItem);
+
+                    expectedNodeStrings.add(newItem);
+                } else {
+                    expectedNodeStrings.add(new ImmutablePair<>(toAdd, 1));
+                }
+
                 node.add(generatedString.toString());
             }
 
-            Set<String> nodeStrings = node.getStrings();
+            Set<Pair<String, Integer>> nodeStrings = node.getStrings();
 //        System.err.println(nodeStrings);
 //        System.err.println(expectedNodeStrings);
 
