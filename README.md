@@ -1,4 +1,5 @@
-# SL
+# Auto Complete
+This is a Auto complete engine I implemented using a Trie
 
 ## Build
 mvn package
