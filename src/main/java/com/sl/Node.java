@@ -12,7 +12,7 @@ public class Node {
         }
     }
 
-    public Optional<Character> value;
+    private Optional<Character> value;
     public int isEndingCount;
 
     public Node(Optional<Character> value, int isEndingCount) {
@@ -39,9 +39,7 @@ public class Node {
         // Leaf node, it must be a proper string
         if(this.children.entrySet().isEmpty()) {
 //            System.err.println("No children, only return node value: " + Character.toString(this.value));
-            String toAdd = this.value.isPresent() ? Character.toString(this.value.get()) : "";
-            int toAddCount = this.isEndingCount;
-            result.add(new ImmutablePair(toAdd, toAddCount));
+            result.add(new ImmutablePair(getValueAsString(), this.isEndingCount));
 
             return result;
         }
@@ -52,7 +50,7 @@ public class Node {
 
             Set<Pair<String, Integer>> childStringAndCounts = node.getStrings();
             for (Pair<String, Integer> childStringAndCount : childStringAndCounts) {
-                String toAdd = (this.value.isPresent() ? Character.toString(this.value.get()) : "") + childStringAndCount.getLeft();
+                String toAdd = getValueAsString() + childStringAndCount.getLeft();
                 int toAddCount = childStringAndCount.getRight();
 
                 result.add(new ImmutablePair<>(toAdd, toAddCount));
@@ -92,5 +90,9 @@ public class Node {
 //            System.err.println("Adding " + ss + " to: " + c0);
             child.add(ss);
         }
+    }
+
+    public String getValueAsString() {
+        return this.value.isPresent() ? Character.toString(this.value.get()) : "";
     }
 }
