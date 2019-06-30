@@ -16,7 +16,7 @@ public class Trie {
         Node currentNode = this.root;
         while(!currentNode.children.isEmpty() && prefix.length() != 0) {
             Character c = prefix.charAt(0);
-            System.err.println("Getting on: " + c);
+//            System.err.println("Getting on: " + c);
             if(!currentNode.children.containsKey(c)) {
                 return null;
             }
@@ -37,7 +37,7 @@ public class Trie {
 
         List<Pair<String, Integer>> allStrings = node.getStrings().stream().collect(Collectors.toList());
         Collections.sort(allStrings, (o1, o2) -> o2.getRight().compareTo(o1.getRight()));
-        System.err.println("sorted result: " + allStrings);
+//        System.err.println("sorted result: " + allStrings);
         for(Pair<String, Integer> str : allStrings) {
             result.add(prefix.substring(0, prefix.length() - 1) + str.getLeft());
             count--;
@@ -60,7 +60,7 @@ public class Trie {
             node.toString(sb);
 
             if(node == lastChild) {
-                System.err.println("Hit last child");
+//                System.err.println("Hit last child");
                 sb.append("\n");
             }
 
@@ -76,6 +76,7 @@ public class Trie {
         return sb.toString();
     }
 
+    // Sample driver program
     public static void main(String[] args) {
         try {
             System.err.println("Hello Trie!");
