@@ -5,11 +5,15 @@ import org.apache.commons.lang3.tuple.*;
 
 public class Node {
     public static Set<Character> POSSIBLE_VALUES = new TreeSet<>();
+    public static String POSSIBLE_VALUES_AS_STRING = "abcdefghijklmnopqrstuvwxyz ";
     static {
-        String values = " abcdefghijklmnopqrstuvwxyz";
-        for(int i = 0; i < values.length(); ++i) {
-            POSSIBLE_VALUES.add(values.charAt(i));
+        for(int i = 0; i < POSSIBLE_VALUES_AS_STRING.length(); ++i) {
+            POSSIBLE_VALUES.add(POSSIBLE_VALUES_AS_STRING.charAt(i));
         }
+    }
+
+    public static char intToChar(int input) {
+        return POSSIBLE_VALUES_AS_STRING.charAt(input);
     }
 
     private Optional<Character> value;
