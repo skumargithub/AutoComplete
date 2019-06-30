@@ -8,6 +8,18 @@ import org.apache.commons.lang3.tuple.*;
 import org.junit.Test;
 
 public class NodeTest {
+    @Test(expected = IllegalArgumentException.class /* Can we detect addition of empty phrase to a node? */)
+    public void addEmptyString() {
+        Node node = new Node(Optional.empty(), 0);
+        node.add("");
+    }
+
+    @Test(expected = IllegalArgumentException.class /* Can we detect addition of null phrase to a node? */)
+    public void addNullString() {
+        Node node = new Node(Optional.empty(), 0);
+        node.add(null);
+    }
+
     @Test(/* Can we represent the root node? */)
     public void rootNode() {
         Node node = new Node(Optional.empty(), 0);
@@ -124,38 +136,6 @@ public class NodeTest {
         assert(nodeStrings.equals(expectedNodeStrings));
     }
 
-    private char intToChar(int input) {
-        switch(input) {
-            case 0: return 'a';
-            case 1: return 'b';
-            case 2: return 'c';
-            case 3: return 'd';
-            case 4: return 'e';
-            case 5: return 'f';
-            case 6: return 'g';
-            case 7: return 'h';
-            case 8: return 'i';
-            case 9: return 'j';
-            case 10: return 'k';
-            case 11: return 'l';
-            case 12: return 'm';
-            case 13: return 'n';
-            case 14: return 'o';
-            case 15: return 'p';
-            case 16: return 'q';
-            case 17: return 'r';
-            case 18: return 's';
-            case 19: return 't';
-            case 20: return 'u';
-            case 21: return 'v';
-            case 22: return 'w';
-            case 23: return 'x';
-            case 24: return 'y';
-            case 25: return 'z';
-            default : return ' ';
-        }
-    }
-
     @Test(/* Can we represent a complicated node? */)
     public void nodeWithArbitraryStuff() {
         Random random = new Random();
@@ -176,7 +156,7 @@ public class NodeTest {
                 int stringLength = random.nextInt(50 - 1 + 1) + 1;   // of varying lengths [1..50]
                 for (int j = 0; j < stringLength; ++j) {
                     int generatedNum = random.nextInt(max - min + 1) + min;
-                    char generatedChar = intToChar(generatedNum);
+                    char generatedChar = Node.intToChar(generatedNum);
                     generatedString.append(generatedChar);
 //               System.err.println("Generated " + Character.toString(generatedChar) + " for " + generatedNum);
                 }

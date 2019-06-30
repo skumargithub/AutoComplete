@@ -37,36 +37,35 @@ public class Node {
         sb.append(" ");
     }
 
+    // Get all phrases starting from this node
     public Set<Pair<String, Integer>> getStrings() {
         Set<Pair<String, Integer>> result = new TreeSet<>();
 
-        // Leaf node, it must be a proper string
+        // Leaf node, it must be the end of some phrase
         if(this.children.entrySet().isEmpty()) {
-//            System.err.println("No children, only return node value: " + Character.toString(this.value));
             result.add(new ImmutablePair(getValueAsString(), this.isEndingCount));
 
             return result;
         }
 
+        // Do for all the node's children
         for(Map.Entry<Character, Node> entry : this.children.entrySet()) {
-//            System.err.println("we have children for node with value: " + Character.toString(this.value));
             Node node = entry.getValue();
 
             Set<Pair<String, Integer>> childStringAndCounts = node.getStrings();
             for (Pair<String, Integer> childStringAndCount : childStringAndCounts) {
+
+                // Append the phrase of the child to self and add it to the collection
                 String toAdd = getValueAsString() + childStringAndCount.getLeft();
                 int toAddCount = childStringAndCount.getRight();
 
                 result.add(new ImmutablePair<>(toAdd, toAddCount));
-//                System.err.println("Adding : " + toAdd);
             }
 
-            // If the node is ending, add an extra entry
+            // If the node is ending (indicate ending phrase), add self entry
             if(this.isEndingCount > 0) {
-//                System.err.println("Node is ending with value: " + Character.toString(this.value));
                 String toAdd = Character.toString(this.value.get());
                 result.add(new ImmutablePair(toAdd, this.isEndingCount));
-//                System.err.println("Adding : " + toAdd);
             }
         }
 
@@ -82,16 +81,19 @@ public class Node {
     }
 
     public void add(String s) {
-//        System.err.println("Trying at add: " + s);
-        char c0 = s.toLowerCase().charAt(0);
+        if(s == null || s.isEmpty()) {
+            throw new IllegalArgumentException("Trying to add null or empty string to node");
+        }
 
+        // Populate the child node with the first character
+        char c0 = s.toLowerCase().charAt(0);
         children.putIfAbsent(c0, new Node(Optional.of(c0), 0));
         Node child = children.get(c0);
+
         if(s.length() == 1) {
-            child.isEndingCount++;      // The string ends here, so increment the word ending count
+            child.isEndingCount++;      // The phrase ends here, increment the word ending count
         } else {
-            String ss = s.substring(1);
-//            System.err.println("Adding " + ss + " to: " + c0);
+            String ss = s.substring(1); // Recursively call add on the remaining phrase
             child.add(ss);
         }
     }
