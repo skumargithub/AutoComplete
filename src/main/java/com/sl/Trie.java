@@ -12,11 +12,15 @@ public class Trie {
         this.root.add(s);
     }
 
-    public Node get(String prefix) {
+    // Get Node matching the given prefix
+    private Node get(String prefix) {
+        if(prefix == null || prefix.isEmpty()) {
+            throw new IllegalArgumentException("Input prefix is null or empty string");
+        }
+
         Node currentNode = this.root;
         while(!currentNode.children.isEmpty() && prefix.length() != 0) {
             Character c = prefix.charAt(0);
-//            System.err.println("Getting on: " + c);
             if(!currentNode.children.containsKey(c)) {
                 return null;
             }
@@ -30,17 +34,30 @@ public class Trie {
     }
 
     public Set<String> getStrings(String prefix, int count) {
+        if(prefix == null || prefix.isEmpty()) {
+            throw new IllegalArgumentException("Input prefix is null or empty string");
+        }
+
+        if(count < 0) throw new IllegalArgumentException("count < 0");
+
         Set<String> result = new TreeSet<String>();
 
+        // Find the deepest node with the given prefix
         Node node = get(prefix);
         if(node == null) return result;
 
+        // Get all the phrases starting at that node
         List<Pair<String, Integer>> allStrings = node.getStrings().stream().collect(Collectors.toList());
+
+        // And sort them by max occurance
         Collections.sort(allStrings, (o1, o2) -> o2.getRight().compareTo(o1.getRight()));
-//        System.err.println("sorted result: " + allStrings);
+
+        // Prepend the prefix to those phrases while limiting to the given count
         for(Pair<String, Integer> str : allStrings) {
-            result.add(prefix.substring(0, prefix.length() - 1) + str.getLeft());
+            String realPrefix = prefix.substring(0, prefix.length() - 1); // Last char s already present in result
+            result.add(realPrefix + str.getLeft());
             count--;
+
             if(count == 0) break;
         }
 

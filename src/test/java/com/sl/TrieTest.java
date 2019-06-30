@@ -9,6 +9,30 @@ import org.junit.Test;
 import org.apache.commons.io.*;
 
 public class TrieTest {
+    @Test(expected = IllegalArgumentException.class /* Detect bogus prefix ? */)
+    public void getOnEmptyPrefix() {
+        Trie trie = new Trie();
+        trie.getStrings("", 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class /* Detect null prefix ? */)
+    public void getOnNullPrefix() {
+        Trie trie = new Trie();
+        trie.getStrings(null, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class /* Detect -ve count ? */)
+    public void getOnNegativeCount() {
+        Trie trie = new Trie();
+        trie.getStrings("a", -1);
+    }
+
+    @Test(expected = IllegalArgumentException.class /* Can we detect addition of null phrase to a node? */)
+    public void addNullString() {
+        Node node = new Node(Optional.empty(), 0);
+        node.add(null);
+    }
+
     @Test(/* Test the coding example */)
     public void testExample1() {
         Trie trie = new Trie();
@@ -20,7 +44,7 @@ public class TrieTest {
         System.err.println(trie);
 
         Set<String> result = trie.getStrings("ba", 1);
-        System.err.println(result);
+//        System.err.println(result);
 
         Set<String> expectedResult = new TreeSet<>();
         expectedResult.add("bat");
@@ -28,7 +52,7 @@ public class TrieTest {
         assert(result.equals(expectedResult));
 
         result = trie.getStrings("ba", 2);
-        System.err.println(result);
+//        System.err.println(result);
 
         expectedResult.clear();
         expectedResult.add("bat");
@@ -47,10 +71,10 @@ public class TrieTest {
         trie.add("bark");
         trie.add("bar");
 
-        System.err.println(trie);
+//        System.err.println(trie);
 
         Set<String> result = trie.getStrings("ba", 1);
-        System.err.println(result);
+//        System.err.println(result);
 
         Set<String> expectedResult = new TreeSet<>();
         expectedResult.add("bat");
@@ -58,7 +82,7 @@ public class TrieTest {
         assert(result.equals(expectedResult));
 
         result = trie.getStrings("ba", 2);
-        System.err.println(result);
+//        System.err.println(result);
 
         expectedResult.clear();
         expectedResult.add("bat");
@@ -69,7 +93,7 @@ public class TrieTest {
         assert(result.isEmpty());
 
         result = trie.getStrings("b", 0);
-        System.err.println(result);
+//        System.err.println(result);
         expectedResult.clear();
         expectedResult.add("bar");
         expectedResult.add("bark");
@@ -87,7 +111,7 @@ public class TrieTest {
 
         String prefix = "a";
         Set<String> results = trie.getStrings(prefix, 1);
-        System.err.println(results);
+//        System.err.println(results);
         Set<String> expectedResults = new TreeSet<>();
         expectedResults.add("a");
 
@@ -161,7 +185,7 @@ public class TrieTest {
         assert(results.equals(expectedResults));
 
         results = trie.getStrings(prefix, 3);
-        System.err.println(results);
+//        System.err.println(results);
 
         expectedResults = new TreeSet<>();
         expectedResults.add("a hsuo");

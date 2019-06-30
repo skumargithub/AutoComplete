@@ -16,8 +16,8 @@ public class Node {
         return POSSIBLE_VALUES_AS_STRING.charAt(input);
     }
 
-    private Optional<Character> value;
-    public int isEndingCount;
+    private Optional<Character> value;          // Root node will NOT have a character
+    private int isEndingCount;                  // To keep a track of how many words end at this node
 
     public Node(Optional<Character> value, int isEndingCount) {
         this.value = value;
@@ -37,7 +37,7 @@ public class Node {
         sb.append(" ");
     }
 
-    // Get all phrases starting from this node
+    // Get all phrases starting at this node
     public Set<Pair<String, Integer>> getStrings() {
         Set<Pair<String, Integer>> result = new TreeSet<>();
 
@@ -62,7 +62,7 @@ public class Node {
                 result.add(new ImmutablePair<>(toAdd, toAddCount));
             }
 
-            // If the node is ending (indicate ending phrase), add self entry
+            // If the node is ending (indicate ending of some phrase), add self entry
             if(this.isEndingCount > 0) {
                 String toAdd = Character.toString(this.value.get());
                 result.add(new ImmutablePair(toAdd, this.isEndingCount));
@@ -80,6 +80,7 @@ public class Node {
         return sb.toString();
     }
 
+    // Add a phrase starting at this node
     public void add(String s) {
         if(s == null || s.isEmpty()) {
             throw new IllegalArgumentException("Trying to add null or empty string to node");
