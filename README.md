@@ -2,7 +2,7 @@
 This is a Auto complete engine I implemented using a Trie
 
 ## Requirements Build
-Function maven and java (>= 8)
+Functional maven and java (>= 8)
 
 ## Compile, Test and Build
 mvn clean compile test package
