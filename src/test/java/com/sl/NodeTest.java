@@ -143,7 +143,7 @@ public class NodeTest {
         int max = 26;
 
         // Use all characters as the start node
-        for(char startChar : Node.POSSIBLE_VALUES) {
+        for(char startChar : Node.POSSIBLE_VALUES.toCharArray()) {
             boolean startIsEnding = random.nextBoolean(); // which may or may not be an ending string
             Node node = new Node(Optional.of(startChar), startIsEnding ? 1 : 0);
 
