@@ -14,7 +14,7 @@ public class AutoComplete {
 
             if (!"complete".equals(inputs[0].toLowerCase())) return Optional.empty();
 
-            String prefix = inputs[1];
+            String prefix = inputs[1].toLowerCase();
             int maxMatchCount = Integer.parseInt(inputs[2]);
             if(maxMatchCount < 0) maxMatchCount = 0;
 
